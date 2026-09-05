@@ -1,0 +1,73 @@
+@media (forced-colors: none) {
+  html[data-overlay-scrollbar='true'],
+  html[data-overlay-scrollbar='true'] body {
+    scrollbar-width: none;
+    scrollbar-gutter: auto;
+  }
+
+  html[data-overlay-scrollbar='true']::-webkit-scrollbar,
+  html[data-overlay-scrollbar='true'] body::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+}
+
+.overlay-scrollbar {
+  position: fixed;
+  z-index: 30;
+  top: 8px;
+  right: 0;
+  bottom: 8px;
+  width: 20px;
+  opacity: 0;
+  outline: none;
+  touch-action: none;
+  user-select: none;
+  transition: opacity 240ms ease;
+}
+
+.overlay-scrollbar[hidden] { display: none; }
+
+.overlay-scrollbar[data-visible],
+.overlay-scrollbar[data-dragging],
+.overlay-scrollbar:hover,
+.overlay-scrollbar:focus-visible { opacity: 1; }
+
+.overlay-scrollbar-thumb {
+  position: absolute;
+  top: 0;
+  right: 4px;
+  width: 4px;
+  min-height: 36px;
+  border-radius: 999px;
+  background: var(--text);
+  opacity: 0.36;
+  transition: width 160ms ease, opacity 160ms ease;
+}
+
+.overlay-scrollbar:hover .overlay-scrollbar-thumb,
+.overlay-scrollbar[data-dragging] .overlay-scrollbar-thumb {
+  width: 6px;
+  opacity: 0.65;
+}
+
+.overlay-scrollbar:focus-visible .overlay-scrollbar-thumb {
+  width: 6px;
+  opacity: 0.9;
+  outline: 1px solid var(--focus);
+  outline-offset: 2px;
+}
+
+@media (pointer: coarse) {
+  .overlay-scrollbar { width: 24px; }
+  .overlay-scrollbar-thumb { right: 3px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay-scrollbar,
+  .overlay-scrollbar-thumb { transition: none; }
+}
+
+@media (forced-colors: active) {
+  .overlay-scrollbar { display: none !important; }
+}

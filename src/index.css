@@ -1,0 +1,71 @@
+@import '@fontsource-variable/noto-sans-sc';
+
+@font-face {
+  font-family: 'Manrope Variable';
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2');
+}
+
+:root {
+  font-family: 'Manrope Variable', 'Noto Sans SC Variable', sans-serif;
+  color: var(--text);
+  background: var(--surface);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  --surface: #eeefed;
+  --surface-subtle: #e0e2df;
+  --text: #292b2b;
+  --muted: #686c6c;
+  --line: #c9cdcc;
+  --accent: #454d50;
+  --focus: #454d50;
+  --page-gutter: 56px;
+  --page-width: 1488px;
+  --header-height: 92px;
+  --compact-header-height: 64px;
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --surface: #222525;
+  --surface-subtle: #2d3131;
+  --text: #eceeed;
+  --muted: #b0b7b6;
+  --line: #454c4a;
+  --accent: #d2dad9;
+  --focus: #d2dad9;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--compact-header-height) + 16px); }
+body { margin: 0; min-width: 320px; }
+button, input, textarea { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button { color: inherit; }
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; }
+button:disabled { cursor: default; }
+button, a { touch-action: manipulation; }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--focus); outline-offset: 6px; }
+button, a, h1, h2, h3, p { letter-spacing: 0; }
+h1, h2, h3, p, figure { margin: 0; }
+ul { margin: 0; padding: 0; list-style: none; }
+svg { flex-shrink: 0; }
+img, svg { -webkit-user-drag: none; user-select: none; }
+::selection { background: var(--accent); color: var(--surface); }
+.skip-link { position: fixed; top: 12px; left: 12px; padding: 12px 20px; background: var(--text); color: var(--surface); z-index: 4; transform: translateY(-160%); }
+.skip-link:focus { transform: translateY(0); }
+
+@media (min-width: 1600px) { :root { --page-gutter: 72px; } }
+@media (max-width: 1023px) { :root { --page-gutter: 32px; --header-height: 80px; } }
+@media (max-width: 767px) { :root { --header-height: 76px; --compact-header-height: 60px; } }
+@media (max-width: 639px) { :root { --page-gutter: 24px; } }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
