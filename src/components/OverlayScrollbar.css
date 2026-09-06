@@ -1,6 +1,6 @@
 @media (forced-colors: none) and (min-width: 768px) {
-  html[data-overlay-scrollbar='true'],
-  html[data-overlay-scrollbar='true'] body {
+  html[data-overlay-scrollbar='true']:not([data-overlay-scrollbar-mobile='true']),
+  html[data-overlay-scrollbar='true']:not([data-overlay-scrollbar-mobile='true']) body {
     scrollbar-width: none;
     scrollbar-gutter: auto;
   }
@@ -10,6 +10,10 @@
     width: 0;
     height: 0;
   }
+}
+
+html[data-overlay-scrollbar-mobile='true'] .overlay-scrollbar {
+  display: none !important;
 }
 
 .overlay-scrollbar {

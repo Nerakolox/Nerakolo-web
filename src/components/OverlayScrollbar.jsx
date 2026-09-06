@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react'
 import './OverlayScrollbar.css'
+import useMobileDevice from '../hooks/useMobileDevice'
 
 export default function OverlayScrollbar() {
+  const isMobileDevice = useMobileDevice()
   const trackRef = useRef(null)
   const thumbRef = useRef(null)
 
@@ -12,6 +14,7 @@ export default function OverlayScrollbar() {
     const scroller = document.scrollingElement || page
     const forcedColors = window.matchMedia('(forced-colors: active)')
     const previousAttribute = page.getAttribute('data-overlay-scrollbar')
+    const previousMobileAttribute = page.getAttribute('data-overlay-scrollbar-mobile')
     let frame = 0
     let idleTimer = 0
     let drag = null
@@ -40,7 +43,7 @@ export default function OverlayScrollbar() {
       const bodyOverflow = window.getComputedStyle(document.body).overflowY
       const pageOverflow = window.getComputedStyle(page).overflowY
       const locked = [bodyOverflow, pageOverflow].some((value) => value === 'hidden' || value === 'clip')
-      const unavailable = forcedColors.matches || locked || maxScroll < 1
+      const unavailable = isMobileDevice || forcedColors.matches || locked || maxScroll < 1
 
       track.hidden = unavailable
       track.tabIndex = unavailable ? -1 : 0
@@ -140,6 +143,8 @@ export default function OverlayScrollbar() {
     lockObserver.observe(document.body, { attributes: true, attributeFilter: ['class', 'style'] })
 
     page.setAttribute('data-overlay-scrollbar', 'true')
+    if (isMobileDevice) page.setAttribute('data-overlay-scrollbar-mobile', 'true')
+    else page.removeAttribute('data-overlay-scrollbar-mobile')
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', scheduleUpdate)
     forcedColors.addEventListener('change', scheduleUpdate)
@@ -168,8 +173,10 @@ export default function OverlayScrollbar() {
       track.removeEventListener('keydown', onKeyDown)
       if (previousAttribute === null) page.removeAttribute('data-overlay-scrollbar')
       else page.setAttribute('data-overlay-scrollbar', previousAttribute)
+      if (previousMobileAttribute === null) page.removeAttribute('data-overlay-scrollbar-mobile')
+      else page.setAttribute('data-overlay-scrollbar-mobile', previousMobileAttribute)
     }
-  }, [])
+  }, [isMobileDevice])
 
   return (
     <div
