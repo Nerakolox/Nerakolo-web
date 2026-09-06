@@ -63,8 +63,10 @@ function ThemeToggle({ theme, toggleTheme }) {
 function Header({ theme, toggleTheme }) {
   const headerRef = useRef(null)
   const menuRef = useRef(null)
+  const menuContentRef = useRef(null)
   const menuToggleRef = useRef(null)
-  const menuAnimationRef = useRef(null)
+  const menuTransitionFrameRef = useRef(0)
+  const menuCloseTimerRef = useRef(0)
   const focusFrameRef = useRef(0)
   const scrollLockRef = useRef(null)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -100,15 +102,21 @@ function Header({ theme, toggleTheme }) {
     }
   }, [])
 
+  const clearMenuTransition = () => {
+    window.cancelAnimationFrame(menuTransitionFrameRef.current)
+    window.clearTimeout(menuCloseTimerRef.current)
+    menuTransitionFrameRef.current = 0
+    menuCloseTimerRef.current = 0
+  }
+
   const releaseMenu = () => {
-    menuAnimationRef.current?.cancel()
-    menuAnimationRef.current = null
+    clearMenuTransition()
     if (scrollLockRef.current !== null) {
       document.body.style.overflow = scrollLockRef.current
       scrollLockRef.current = null
     }
     headerRef.current?.style.removeProperty('--nav-height')
-    menuRef.current?.removeAttribute('data-closing')
+    menuRef.current?.removeAttribute('data-menu-state')
   }
 
   const finishClose = () => {
@@ -135,16 +143,12 @@ function Header({ theme, toggleTheme }) {
       finishClose()
       return
     }
-    if (menuAnimationRef.current) return
-    const content = dialog.querySelector('.mobile-menu-content')
-    const current = window.getComputedStyle(content)
-    dialog.dataset.closing = 'true'
-    const animation = content.animate([
-      { opacity: current.opacity, transform: current.transform },
-      { opacity: 0, transform: 'translateY(-8px)' },
-    ], { duration: 160, easing: 'cubic-bezier(.4, 0, 1, 1)', fill: 'forwards' })
-    menuAnimationRef.current = animation
-    animation.finished.then(finishClose, () => {})
+    if (dialog.dataset.menuState === 'closing') return
+    window.cancelAnimationFrame(menuTransitionFrameRef.current)
+    dialog.dataset.menuState = 'closing'
+    menuCloseTimerRef.current = window.setTimeout(() => {
+      if (dialog.open && dialog.dataset.menuState === 'closing') finishClose()
+    }, 340)
   }
 
   const openMenu = () => {
@@ -157,8 +161,17 @@ function Header({ theme, toggleTheme }) {
     scrollLockRef.current = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     dialog.showModal()
+    dialog.dataset.menuState = 'opening'
     setMenuOpen(true)
     dialog.querySelector('.menu-close').focus({ preventScroll: true })
+    menuTransitionFrameRef.current = window.requestAnimationFrame(() => {
+      if (dialog.open && dialog.dataset.menuState === 'opening') dialog.dataset.menuState = 'open'
+    })
+  }
+
+  const onMenuTransitionEnd = (event) => {
+    if (event.target !== menuContentRef.current || event.propertyName !== 'opacity') return
+    if (menuRef.current?.dataset.menuState === 'closing') finishClose()
   }
 
   useEffect(() => {
@@ -168,21 +181,20 @@ function Header({ theme, toggleTheme }) {
     const onResize = () => {
       if (desktop.matches && dialog.open) {
         dialog.close()
-        menuAnimationRef.current?.cancel()
-        menuAnimationRef.current = null
+        clearMenuTransition()
         if (scrollLockRef.current !== null) {
           document.body.style.overflow = scrollLockRef.current
           scrollLockRef.current = null
         }
         header.style.removeProperty('--nav-height')
-        dialog.removeAttribute('data-closing')
+        dialog.removeAttribute('data-menu-state')
         setMenuOpen(false)
       }
     }
     desktop.addEventListener('change', onResize)
     return () => {
       desktop.removeEventListener('change', onResize)
-      menuAnimationRef.current?.cancel()
+      clearMenuTransition()
       window.cancelAnimationFrame(focusFrameRef.current)
       if (scrollLockRef.current !== null) document.body.style.overflow = scrollLockRef.current
     }
@@ -203,7 +215,7 @@ function Header({ theme, toggleTheme }) {
           </div>
         </div>
       </div>
-      <dialog id="mobile-navigation" ref={menuRef} className="mobile-menu" onCancel={(event) => { event.preventDefault(); closeMenu() }} onClose={onMenuClosed} aria-label="网站导航">
+      <dialog id="mobile-navigation" ref={menuRef} className="mobile-menu" onCancel={(event) => { event.preventDefault(); closeMenu() }} onClose={onMenuClosed} onTransitionEnd={onMenuTransitionEnd} aria-label="网站导航">
         <div className="mobile-menu-top header-inner">
           <a className="wordmark" href="#home" onClick={() => closeMenu(true)} aria-label="Nerakolo 首页"><img className="signature" src="/art/signature-en.svg" alt="Nerakolo" width="2788" height="774" draggable={false} /></a>
           <div className="header-actions">
@@ -211,7 +223,7 @@ function Header({ theme, toggleTheme }) {
             <button className="icon-button menu-close" onClick={() => closeMenu()} aria-label="关闭导航"><X size={22} /></button>
           </div>
         </div>
-        <div className="mobile-menu-content">
+        <div ref={menuContentRef} className="mobile-menu-content">
           <nav aria-label="移动导航">
             {navigation.map(({ href, label, english }, index) => <a key={href} href={href} onClick={() => closeMenu(true)} aria-current={activeSection === href.slice(1) ? 'location' : undefined} style={{ '--menu-order': index }}><span>{label}<small>{english}</small></span><ArrowUpRight size={28} strokeWidth={1.5} /></a>)}
           </nav>
