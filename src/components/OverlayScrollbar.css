@@ -1,4 +1,4 @@
-@media (forced-colors: none) {
+@media (forced-colors: none) and (min-width: 768px) {
   html[data-overlay-scrollbar='true'],
   html[data-overlay-scrollbar='true'] body {
     scrollbar-width: none;
@@ -69,5 +69,9 @@
 }
 
 @media (forced-colors: active) {
+  .overlay-scrollbar { display: none !important; }
+}
+
+@media (max-width: 767px) {
   .overlay-scrollbar { display: none !important; }
 }
