@@ -1,0 +1,48 @@
+.page-section { padding-block: 120px; }
+.about-section { padding-block: 90px 96px; }
+.about-header { margin-bottom: 46px; }
+.about-layout { display: grid; grid-template-columns: 1fr 1fr; column-gap: 12%; align-items: start; }
+.greeting { font-size: 13px; line-height: 2; margin-bottom: 22px; }
+.about-intro h2 { font-size: 46px; line-height: 1.55; font-weight: 350; }
+.about-intro h2 > span { display: block; }
+.about-emphasis { color: var(--muted); }
+.personal-signature { width: 190px; max-width: 100%; margin-top: 30px; transform: rotate(-5deg); }
+.about-details { padding-top: 42px; }
+.about-copy { max-width: 34em; }
+.about-copy p { font-size: 15px; color: var(--muted); line-height: 2.15; text-wrap: pretty; }
+.about-copy p + p { margin-top: 22px; }
+.interests { display: grid; gap: 24px; margin-top: 40px; padding-top: 26px; border-top: 1px solid var(--line); }
+.interests > div { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 20px; align-items: baseline; }
+.interests h3 { font-size: 11px; font-weight: 400; color: var(--muted); line-height: 1.8; }
+.interests ul { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 12px; line-height: 1.8; }
+@media (max-width: 1279px) {
+  .about-intro h2 { font-size: 41px; }
+}
+@media (max-width: 1023px) {
+  .page-section { padding-block: 85px; }
+  .about-layout { column-gap: 8%; }
+  .about-intro h2 { font-size: 34px; }
+  .about-copy p { font-size: 14px; }
+  .interests > div { grid-template-columns: 1fr; gap: 8px; }
+  .personal-signature { width: 165px; }
+}
+@media (max-width: 767px) {
+  .about-header { margin-bottom: 32px; }
+  .about-layout { grid-template-columns: 1fr; gap: 32px; }
+  .about-intro h2 { font-size: 40px; }
+  .personal-signature { width: 150px; margin-top: 24px; margin-left: auto; }
+  .about-details { padding-top: 0; }
+  .about-copy { max-width: 100%; }
+  .interests { grid-template-columns: 1fr 1fr; margin-top: 30px; gap: 25px; }
+  .interests ul { flex-direction: column; gap: 6px; }
+}
+@media (max-width: 479px) {
+  .page-section { padding-block: 68px; }
+  .about-intro h2 { font-size: 32px; }
+  .greeting { font-size: 12px; margin-bottom: 18px; }
+  .personal-signature { width: 135px; }
+  .about-copy p { font-size: 13px; }
+}
+@media (max-width: 374px) {
+  .about-intro h2 { font-size: 29px; }
+}

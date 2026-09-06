@@ -1,4 +1,4 @@
-/* The illustration paper and ink keep their original contrast in either theme. */
+/* Shared illustrated sections keep the original paper and ink contrast in either theme. */
 .illustrated-section {
   --ink: #242727;
   --ink-soft: #3e4242;

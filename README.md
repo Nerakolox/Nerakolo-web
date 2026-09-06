@@ -64,10 +64,19 @@ npm run dev
 |   |-- favicon.ico            # 浏览器图标后备
 |   `-- apple-touch-icon.png   # Apple 主屏幕图标
 |-- src/
-|   |-- components/            # 悬浮滚动条及保留的雕塑组件
-|   |-- App.jsx                # 页面内容、导航、主题与交互
-|   |-- App.css                # 主页面布局与样式
-|   |-- Connections.css        # 链接区与友链区样式
+|   |-- components/
+|   |   |-- sections/          # Hero、About、Elsewhere、Friends 及区块样式
+|   |   |-- Header.jsx         # 桌面导航与移动菜单，样式在 Header.css
+|   |   |-- Footer.jsx         # 页脚，样式在 Footer.css
+|   |   |-- EmailContact.jsx   # 邮箱联系、复制与状态反馈
+|   |   |-- ExternalLink.jsx   # 统一新窗口外链属性
+|   |   |-- SectionLabel.jsx   # 中英文区块标签
+|   |   |-- OverlayScrollbar.jsx # 悬浮滚动条
+|   |   `-- Sculpture.jsx      # 保留的旧版雕塑组件，当前未使用
+|   |-- data/site.js           # 导航、邮箱、兴趣、社交链接与友链数据
+|   |-- hooks/                 # 主题、导航定位、移动菜单、页面效果与设备检测
+|   |-- App.jsx                # 页面组件组合入口
+|   |-- App.css                # 共享布局、按钮、签名与入场动效
 |   |-- index.css              # 字体、主题变量与全局样式
 |   `-- main.jsx               # React 挂载入口
 |-- index.html                 # 页面标题、元信息、图标与初始主题
@@ -79,14 +88,18 @@ npm run dev
 
 | 要修改的内容 | 位置 |
 | --- | --- |
-| 个人介绍、导航、社交链接、友链、邮箱和备案信息 | `src/App.jsx` |
+| 导航、社交链接、友链、邮箱和兴趣列表 | `src/data/site.js` |
+| 首屏文案与个人介绍 | `src/components/sections/Hero.jsx`、`About.jsx` |
+| 备案信息和页脚内容 | `src/components/Footer.jsx` |
 | 主题色、字体、页面宽度与全局间距 | `src/index.css` |
-| 首屏、关于区、导航和页脚布局 | `src/App.css` |
-| 书桌链接区与屋顶友链区布局 | `src/Connections.css` |
+| 区块、导航和页脚布局 | 对应组件旁的 `Hero.css`、`About.css`、`Header.css`、`Footer.css` |
+| 书桌链接区与屋顶友链区布局 | `src/components/sections/Connections.css` |
+| 共享布局与入场动效 | `src/App.css` |
+| 主题、菜单与滚动交互 | `src/hooks/`；邮箱复制位于 `src/components/EmailContact.jsx` |
 | 页面标题、描述、Open Graph 元信息和图标引用 | `index.html` |
 | 插画与签名 | `public/art/` |
 
-更换插画时同步检查 `src/App.jsx` 中的图片路径、替代文本和宽高属性。素材来源及当前使用情况见[设计说明](docs/design-notes.md#用户素材)。
+更换插画时同步检查对应页面组件中的图片路径、替代文本和宽高属性。素材来源及当前使用情况见[设计说明](docs/design-notes.md#用户素材)。
 
 ## 构建与部署
 
