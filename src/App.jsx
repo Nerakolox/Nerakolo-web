@@ -8,24 +8,28 @@ import Elsewhere from './components/sections/Elsewhere'
 import Friends from './components/sections/Friends'
 import usePageEffects from './hooks/usePageEffects'
 import useTheme from './hooks/useTheme'
+import useEmailActions from './hooks/useEmailActions'
+import FollowPopover from './components/FollowPopover'
 
 export default function App() {
   const [theme, toggleTheme] = useTheme()
+  const { toast, copied, onEmailClick, onCopyEmail, dismissToast } = useEmailActions()
   usePageEffects()
 
   return (
     <>
       <a href="#about" className="skip-link">跳到主要内容</a>
       <div id="home" aria-hidden="true" />
-      <Header theme={theme} toggleTheme={toggleTheme} />
+      <Header theme={theme} toggleTheme={toggleTheme} onEmailClick={onEmailClick} />
       <main>
         <Hero />
         <About />
-        <Elsewhere />
-        <Friends />
+        <Elsewhere onEmailClick={onEmailClick} onCopyEmail={onCopyEmail} copied={copied} />
+        <Friends onEmailClick={onEmailClick} />
       </main>
-      <Footer />
+      <Footer onEmailClick={onEmailClick} />
       <OverlayScrollbar />
+      <FollowPopover toast={toast} onDismiss={dismissToast} />
     </>
   )
 }

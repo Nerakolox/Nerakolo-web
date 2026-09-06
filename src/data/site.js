@@ -37,10 +37,10 @@ export const socialLinks = [
 export const friendLinks = [
   {
     id: 'tools',
-    name: 'tools.',
-    caption: '我的工具集合',
-    href: 'https://tools.nerakolo.cc/',
-    domain: 'tools.nerakolo.cc',
+    name: 'Feedra',
+    caption: '我的独立站',
+    href: 'https://www.feedra.org/',
+    domain: 'www.feedra.org',
     arrowSize: 29,
   },
   {

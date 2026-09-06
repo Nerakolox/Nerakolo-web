@@ -21,7 +21,7 @@ function ThemeToggle({ theme, toggleTheme }) {
   )
 }
 
-export default function Header({ theme, toggleTheme }) {
+export default function Header({ theme, toggleTheme, onEmailClick }) {
   const { headerRef, activeSection } = useHeaderNavigation()
   const {
     menuRef, menuContentRef, menuToggleRef, menuOpen,
@@ -39,7 +39,7 @@ export default function Header({ theme, toggleTheme }) {
             ))}
           </nav>
           <div className="header-actions">
-            <a className="header-contact" href={emailHref}>打个招呼 <ArrowUpRight size={16} /></a>
+            <a className="header-contact" href={emailHref} onClick={onEmailClick}>打个招呼 <ArrowUpRight size={16} /></a>
             <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
             <button ref={menuToggleRef} className="icon-button menu-toggle" onClick={openMenu} aria-label="打开导航" aria-haspopup="dialog" aria-expanded={menuOpen} aria-controls="mobile-navigation"><Menu size={22} /></button>
           </div>
@@ -61,7 +61,7 @@ export default function Header({ theme, toggleTheme }) {
               </a>
             ))}
           </nav>
-          <a className="menu-email" href={emailHref} onClick={() => closeMenu(true)}>{email} <ArrowUpRight size={18} /></a>
+          <a className="menu-email" href={emailHref} onClick={(event) => { closeMenu(true); onEmailClick(event) }}>{email} <ArrowUpRight size={18} /></a>
         </div>
       </dialog>
     </header>

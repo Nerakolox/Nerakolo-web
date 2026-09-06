@@ -65,7 +65,7 @@
 
 | 条目 | 介绍 | 链接 |
 | --- | --- | --- |
-| OWN / tools.nerakolo.cc | 我自己的工具集合站 | https://tools.nerakolo.cc/ |
+| OWN / Feedra | 我自己的独立站 | https://www.feedra.org/ |
 | Axolotland Gaming club | 朋友们的游戏俱乐部 | https://axogc.net/ |
 | 申请友链 | 发邮件告诉我你的名字、网址和一句话介绍。 | mailto:nerakolo@outlook.com?subject=友链申请 |
 

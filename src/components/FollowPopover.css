@@ -1,0 +1,40 @@
+.follow-popover-region { position: fixed; inset: 0; z-index: 31; pointer-events: none; }
+.follow-popover {
+  --focus: #242727;
+  --popover-safe-bottom: env(safe-area-inset-bottom, 0px);
+  position: absolute;
+  visibility: hidden;
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) 32px 96px;
+  align-items: center;
+  gap: 10px;
+  width: min(440px, calc(100% - 32px));
+  min-height: 88px;
+  padding: 16px;
+  overflow: auto;
+  color: #242727;
+  color-scheme: light;
+  background: #a5a5a6 url('/art/follow-popover-paper.png') center bottom / 100% auto no-repeat;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  pointer-events: auto;
+}
+.follow-popover-copy { min-width: 0; font-size: 14px; font-weight: 400; line-height: 1.8; overflow-wrap: anywhere; }
+.follow-popover.is-closing { pointer-events: none; }
+.follow-popover .icon-button { width: 32px; height: 40px; color: inherit; }
+.follow-popover-address { display: block; font-size: 13px; user-select: all; }
+@media (max-width: 600px) {
+  .follow-popover { min-height: 0; padding: 16px 16px 44px; gap: 8px; grid-template-columns: 16px minmax(0, 1fr) 28px; align-items: start; }
+  .follow-popover > svg { margin-top: 4px; }
+  .follow-popover .icon-button { width: 28px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .follow-popover { animation: follow-popover-in 180ms ease-out; }
+  @keyframes follow-popover-in { from { opacity: 0; } to { opacity: 1; } }
+  .follow-popover.is-closing { animation: follow-popover-out 140ms ease-in forwards; }
+  @keyframes follow-popover-out { from { opacity: 1; } to { opacity: 0; } }
+}
+@media (forced-colors: active) {
+  .follow-popover { background: Canvas; color: CanvasText; border: 1px solid CanvasText; }
+}

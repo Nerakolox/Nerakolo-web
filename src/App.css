@@ -1,4 +1,4 @@
-/* Stacking: hero lettering 1, header 2, skip link 4, scrollbar 30; dialogs use the top layer. */
+/* Stacking: hero lettering 1, header 2, skip link 4, scrollbar 30, toast 31; dialogs use the top layer. */
 .header-inner, .page-section, .site-footer, .direction-band { width: min(100%, var(--page-width)); margin-inline: auto; padding-inline: var(--page-gutter); }
 #home { position: absolute; top: 0; left: 0; width: 1px; height: 1px; pointer-events: none; }
 .signature { display: block; height: auto; }

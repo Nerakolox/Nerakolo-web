@@ -4,7 +4,7 @@ import EmailContact from '../EmailContact'
 import ExternalLink from '../ExternalLink'
 import './Connections.css'
 
-export default function Elsewhere() {
+export default function Elsewhere({ onEmailClick, onCopyEmail, copied }) {
   return (
     <section id="links" className="desk-section illustrated-section" aria-labelledby="links-title">
       <img className="scene-art desk-art" src="/art/letter-desk.png" alt="灰调书桌线稿，右侧放着耳机和信笺，一只手停在纸面上" width="1672" height="941" loading="lazy" draggable={false} />
@@ -24,7 +24,7 @@ export default function Elsewhere() {
               </ExternalLink>
             ))}
           </div>
-          <EmailContact />
+          <EmailContact onEmailClick={onEmailClick} onCopyEmail={onCopyEmail} copied={copied} />
         </div>
       </div>
     </section>

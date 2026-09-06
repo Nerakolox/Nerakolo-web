@@ -10,6 +10,7 @@ Nerakolo 个人主页，记录编程、音乐与生活兴趣，也连接散落�
 
 - **个人介绍**：首屏签名、关于我，以及编程、AI 应用、Minecraft 和音乐等兴趣方向。
 - **对外连接**：GitHub、Gitee、邮件联系、邮箱复制与友情链接。
+- **邮件反馈**：普通点击邮件链接时复制邮箱，并保留原生邮件应用跳转；浏览器无法可靠检测 `mailto:` 是否绑定应用，因此 Toast 只反馈复制结果。复制失败时显示可手动复制的地址。
 - **明暗主题**：默认跟随系统，手动切换后在本地保存偏好。
 - **响应式导航**：滚动时收起的顶部导航、当前段落指示，以及移动端菜单。
 - **阅读体验**：锚点跳转、段落入场动效、支持拖动和键盘操作的悬浮滚动条。
@@ -95,7 +96,7 @@ npm run dev
 | 区块、导航和页脚布局 | 对应组件旁的 `Hero.css`、`About.css`、`Header.css`、`Footer.css` |
 | 书桌链接区与屋顶友链区布局 | `src/components/sections/Connections.css` |
 | 共享布局与入场动效 | `src/App.css` |
-| 主题、菜单与滚动交互 | `src/hooks/`；邮箱复制位于 `src/components/EmailContact.jsx` |
+| 主题、菜单与滚动交互 | `src/hooks/`；邮件反馈位于 `src/hooks/useEmailActions.js` 与 `src/components/FollowPopover.jsx`，图片底材位于 `public/art/follow-popover-paper.png`，复制兼容逻辑位于 `src/utils/copyText.js` |
 | 页面标题、描述、Open Graph 元信息和图标引用 | `index.html` |
 | 插画与签名 | `public/art/` |
 
@@ -114,7 +115,8 @@ npm run preview
 部署时注意：
 
 - 当前配置面向域名根路径，例如 `https://example.com/`。若部署到子路径，需要同时调整 Vite 的 `base` 和源码中以 `/art/` 等开头的资源引用。
-- 正式站点使用 HTTPS，确保邮箱复制所用的 Clipboard API 可用；本地 `localhost` 开发通常也可使用。
+- 正式站点使用 HTTPS，确保邮箱复制所用的 Clipboard API 可用；本地 `localhost` 开发通常也可使用。不支持该 API 或权限被拒绝时会尝试兼容复制；两种方式均失败则提示手动复制。
+
 - 当前页面通过 `#about`、`#links`、`#friends` 进行站内导航，没有独立的 `/design` 页面。
 
 ## 相关文档
