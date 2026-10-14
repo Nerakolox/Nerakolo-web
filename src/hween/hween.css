@@ -1,0 +1,496 @@
+/*
+  The page speaks the site's own design language: the shared surface/text/muted/line
+  tokens, hairline rules, square corners, and the Manrope type ladder. The envelope
+  and the postcard keep their own illustration palette, the way .illustrated-section
+  does: a printed postcard should not change ink with the site theme.
+*/
+.hween {
+  min-height: 100svh;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  background: var(--surface);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/*
+  One cell holds the envelope, the postcard over it, and the code panel floating over both.
+  Everything is top-aligned, so no state change ever moves the envelope or the card: the
+  intro panel leaving, or the letter growing, only changes what is below them.
+*/
+.hween-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto;
+  align-content: start;
+  justify-items: center;
+  min-height: 0;
+  width: min(100%, var(--page-width));
+  margin-inline: auto;
+  padding: clamp(40px, 8svh, 104px) var(--page-gutter) clamp(36px, 4.4vw, 60px);
+  /* The envelope, the card at rest, and the letter at reading size each have one measure.
+     The card is deliberately wider than the envelope, as if held up close to the eye. */
+  --envelope-w: min(560px, 88vw, 100%);
+  --card-w: min(760px, calc(100vw - 32px));
+  --read-w: min(920px, calc(100vw - 32px));
+}
+
+.hween-stack {
+  grid-area: 1 / 1;
+  width: 100%;
+  justify-self: stretch;
+  align-self: start;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto;
+  justify-items: center;
+  align-items: start;
+}
+
+/*
+  Both PNGs are a 1024 square with the envelope body at (131, 409)–(893, 830).
+  The frame is cropped to that body, so the art is scaled up and pulled negative
+  to hang its transparent margin outside the box. The envelope has no z-index, so the
+  postcard (z-index 2) always paints above all of it.
+*/
+.hween-envelope {
+  position: relative;
+  grid-area: 1 / 1;
+  align-self: start;
+  width: var(--envelope-w);
+  aspect-ratio: 762 / 421;
+  pointer-events: none;
+}
+.hween-envelope-closed,
+.hween-envelope-open {
+  position: absolute;
+  top: -97.1497%;
+  left: -17.1917%;
+  width: 134.3832%;
+  height: auto;
+  transition: opacity 520ms cubic-bezier(.22, 1, .36, 1);
+}
+.hween-envelope-closed { transform-origin: 50% 100%; }
+.hween-envelope-open { opacity: 0; }
+
+/*
+  Unsealing runs in three beats. The flap opens (the two frames cross-fade in register,
+  since envelope-open.png keeps the same body position); the envelope then sinks away
+  behind the card; and the card, which rises out of it, takes over the page.
+*/
+.hween[data-unsealed] .hween-envelope-closed { opacity: 0; }
+.hween[data-unsealed] .hween-envelope-open { opacity: 1; }
+.hween[data-unsealed] .hween-envelope {
+  opacity: 0;
+  translate: 0 12%;
+  transition:
+    opacity 700ms 380ms ease,
+    translate 1000ms 380ms cubic-bezier(.22, 1, .36, 1);
+}
+
+/*
+  The card is the whole point of the page, so it is the largest thing on it: a 3:2
+  postcard wider than the envelope, then the full reading measure once it has turned over.
+  It is the top layer and anchors the idle hint (position:relative).
+*/
+.hween-postcard {
+  position: relative;
+  grid-area: 1 / 1;
+  align-self: start;
+  z-index: 2;
+  width: 100%;
+  display: grid;
+  justify-items: center;
+}
+
+/* The card rises out of the open envelope and grows toward the viewer. */
+@media (prefers-reduced-motion: no-preference) {
+  .hween-postcard { animation: hween-emerge 1100ms 260ms cubic-bezier(.22, 1, .36, 1) both; }
+  @keyframes hween-emerge {
+    from { opacity: 0; translate: 0 26%; scale: .62; }
+    35% { opacity: 1; }
+    to { opacity: 1; translate: none; scale: 1; }
+  }
+}
+
+.hween-card {
+  position: relative;
+  display: block;
+  width: var(--card-w);
+  aspect-ratio: 3 / 2;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  /* --px and --py are unitless pointer offsets in [-.5, .5]; the tilt and the sheen both
+     read them, and the pointer handler writes them inline. --lift pulls the card toward
+     the viewer while it turns. */
+  transform:
+    perspective(1500px)
+    translateZ(var(--lift, 0px))
+    rotateX(calc(var(--py, 0) * -6deg))
+    rotateY(calc(var(--spin, 0deg) + var(--px, 0) * 10deg));
+  /* Short, so the tilt follows the pointer; the flip below overrides it with a longer one. */
+  transition:
+    transform 260ms cubic-bezier(.22, 1, .36, 1),
+    width 760ms cubic-bezier(.22, 1, .36, 1),
+    height 760ms cubic-bezier(.22, 1, .36, 1);
+  will-change: transform;
+}
+.hween-card:focus-visible { outline: 2px solid var(--focus); outline-offset: 8px; }
+
+/* Turn: the card is brought up close and flips over, still at card size. */
+.hween-postcard[data-phase='turn'] .hween-card,
+.hween-postcard[data-phase='read'] .hween-card {
+  --spin: 180deg;
+  cursor: default;
+}
+.hween-postcard[data-phase='turn'] .hween-card {
+  --lift: 150px;
+  transition:
+    transform 560ms cubic-bezier(.4, 0, .2, 1),
+    width 760ms cubic-bezier(.22, 1, .36, 1),
+    height 760ms cubic-bezier(.22, 1, .36, 1);
+}
+
+/* Read: the card settles back at the reading width; the height is the measured letter height. */
+.hween-postcard[data-phase='read'] .hween-card {
+  width: var(--read-w);
+  aspect-ratio: auto;
+  transition:
+    transform 760ms cubic-bezier(.22, 1, .36, 1),
+    width 760ms cubic-bezier(.22, 1, .36, 1),
+    height 760ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.hween-card-face {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  background: var(--surface-subtle);
+  border: 1px solid var(--line);
+  box-shadow: var(--card-shadow);
+  backface-visibility: hidden;
+}
+.hween-card-back { transform: rotateY(180deg); }
+
+/*
+  Light from the upper left is what separates paper from the page behind it. The offset
+  is tied to the pointer, so the sheet sits over its own shadow as the card tilts.
+*/
+.hween-card {
+  --paper-sheen: rgba(255, 255, 255, .5);
+  --card-shadow: calc(var(--px, 0) * -26px) calc(var(--py, 0) * -18px + 24px) 46px -8px rgba(24, 28, 28, .34);
+  --matte-veil: linear-gradient(158deg, rgba(255, 255, 255, .3), rgba(255, 255, 255, 0) 42%, rgba(0, 0, 0, .05));
+}
+:root[data-theme='dark'] .hween-card {
+  --paper-sheen: rgba(255, 255, 255, .06);
+  --card-shadow: calc(var(--px, 0) * -26px) calc(var(--py, 0) * -18px + 24px) 46px -8px rgba(0, 0, 0, .62);
+  --matte-veil: linear-gradient(158deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, 0) 42%, rgba(0, 0, 0, .18));
+}
+
+/*
+  An uncoated print deadens the ink instead of glinting on it, so the treatment is a
+  flat veil plus grain rather than a highlight. --matte-veil is the veil; the noise is
+  the tooth. Both sit above the art and never catch the pointer.
+*/
+.hween-card-front::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--matte-veil);
+  pointer-events: none;
+}
+.hween-card-art {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: saturate(.88) contrast(.95) brightness(1.03);
+}
+
+/*
+  Grain, drawn as an inline SVG so there is no texture asset to ship: fractal noise for
+  the tooth of the stock, and one soft radial for the sheen a sheet has in the hand.
+*/
+.hween-card-grain,
+.hween-card-sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.hween-card-grain {
+  z-index: 2;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23g)' opacity='.5'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+  mix-blend-mode: overlay;
+  opacity: .24;
+}
+:root[data-theme='dark'] .hween-card-grain { opacity: .16; }
+
+/* The sheen tracks the pointer, so the paper looks lit rather than printed flat. */
+.hween-card-sheen {
+  z-index: 1;
+  background: radial-gradient(
+    calc(74% + var(--px, 0) * 16%) calc(60% + var(--py, 0) * 16%) at
+    calc(50% + var(--px, 0) * 56%) calc(44% + var(--py, 0) * 56%),
+    var(--paper-sheen),
+    transparent 68%
+  );
+}
+
+/* The art is on the front only; once the card is the letter there is nothing to stretch. */
+.hween-postcard[data-phase='read'] .hween-card-front { display: none; }
+
+/*
+  The letter is absolutely anchored to the top of its face so its height is always its
+  own content's height, at whatever width the card currently has. That is what lets the
+  card read its own height out of the DOM instead of guessing at it.
+*/
+.hween-letter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: auto;
+  display: grid;
+  gap: clamp(24px, 2.8vw, 40px);
+  padding: clamp(34px, 4.2vw, 64px) clamp(26px, 4.2vw, 64px) clamp(30px, 3.6vw, 54px);
+}
+/* A ruled plate inside the sheet, the way a letterpress card is framed. */
+.hween-letter::before {
+  content: '';
+  position: absolute;
+  inset: clamp(10px, 1vw, 16px);
+  border: 1px solid var(--line);
+  opacity: .55;
+  pointer-events: none;
+}
+
+.hween-letter-head {
+  display: grid;
+  gap: clamp(16px, 2vw, 28px);
+  padding-bottom: clamp(18px, 2.2vw, 30px);
+  border-bottom: 1px solid var(--line);
+}
+.hween-letter-kicker {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  font-size: 10px;
+  line-height: 1.6;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.hween-letter-to {
+  font-size: clamp(22px, 2.6vw, 34px);
+  font-weight: 350;
+  line-height: 1.5;
+}
+
+.hween-letter-body { max-width: 42em; }
+.hween-letter-body p {
+  font-size: clamp(14.5px, 1.3vw, 17px);
+  line-height: 2.1;
+  text-wrap: pretty;
+}
+.hween-letter-body p + p { margin-top: clamp(16px, 1.6vw, 22px); }
+
+.hween-letter-foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding-top: clamp(20px, 2.4vw, 32px);
+  border-top: 1px solid var(--line);
+}
+.hween-letter-date {
+  font-size: 11px;
+  line-height: 1.8;
+  letter-spacing: .08em;
+  color: var(--muted);
+}
+/* height:auto is load-bearing: the img's height attribute outranks the aspect-ratio hint,
+   so without it the signature renders at its full 774px intrinsic height. */
+.hween-letter-signature { width: clamp(120px, 12vw, 168px); height: auto; }
+:root[data-theme='dark'] .hween-letter-signature { filter: invert(1); }
+
+/*
+  The prompt lives on the card's face: a dark veil dims the art and a centred label
+  asks to be clicked. It waits until the card has sat untouched, fades in, and is gone
+  the moment the pointer arrives or the card turns. It is a hint, not a control.
+*/
+.hween-card-hint {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, rgba(14, 16, 16, .3), rgba(14, 16, 16, .58));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 640ms ease;
+}
+.hween-card-hint[data-shown] { opacity: 1; }
+.hween-card-hint-label {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 26px;
+  border: 1px solid rgba(255, 255, 255, .62);
+  background: rgba(14, 16, 16, .32);
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: .32em;
+  text-indent: .32em;
+  white-space: nowrap;
+}
+.hween-card-hint-dot {
+  width: 7px;
+  height: 7px;
+  background: currentColor;
+  animation: hween-pulse 2000ms ease-in-out infinite;
+}
+@keyframes hween-pulse { 0%, 100% { opacity: .3; } 50% { opacity: 1; } }
+
+/*
+  The code panel floats over the envelope, on the top layer. Its top edge sits just under
+  the wax seal (76% of the envelope's height, which is .42 of its width), so the seal stays
+  visible and the panel buries only the envelope's lower part.
+*/
+.hween-intro {
+  position: relative;
+  z-index: 4;
+  grid-area: 1 / 1;
+  align-self: start;
+  width: min(100%, 468px);
+  margin-top: calc(var(--envelope-w) * .42);
+  padding: clamp(24px, 4vw, 40px) clamp(20px, 4vw, 40px) clamp(24px, 3.4vw, 36px);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: 0 28px 60px -22px rgba(24, 28, 28, .42);
+  transition: opacity 420ms ease, translate 520ms cubic-bezier(.4, 0, .2, 1);
+}
+/* Unsealing: the panel drops away from the envelope before it is removed. */
+.hween-intro[data-leaving] { opacity: 0; translate: 0 36px; pointer-events: none; }
+:root[data-theme='dark'] .hween-intro { box-shadow: 0 28px 60px -22px rgba(0, 0, 0, .7); }
+.hween-label { display: flex; gap: 20px; font-size: 11px; line-height: 1.8; }
+.hween-label span:last-child { color: var(--muted); font-size: 10px; }
+.hween-title { margin-top: 20px; font-size: 46px; font-weight: 350; line-height: 1.35; }
+.hween-hint { margin-top: 18px; font-size: 13px; line-height: 2; color: var(--muted); }
+
+.hween-form { margin-top: 30px; }
+.hween-form-fieldset { border: 0; margin: 0; padding: 0; }
+.hween-form legend {
+  padding: 0;
+  margin-bottom: 16px;
+  font-size: 11px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+
+/*
+  A real input sits transparent on top of the six drawn cells: it keeps the native
+  keyboard, paste, arrow keys, and backspace for free, and the caret is pushed to
+  the end on every change so the grid always reads left to right.
+*/
+.hween-code { position: relative; }
+.hween-code-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+  /* Below 16px iOS zooms the whole page when the field takes focus. */
+  font-size: 16px;
+}
+.hween-code-input:focus { outline: none; }
+.hween-code-cells { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+.hween-code-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1.18;
+  background: var(--surface-subtle);
+  border: 1px solid var(--line);
+  font-size: 19px;
+  line-height: 1;
+  text-transform: lowercase;
+  transition: border-color 180ms;
+}
+.hween-code-cell[data-filled] { color: var(--text); }
+.hween-code-cell[data-active] { border-color: var(--text); }
+.hween-code-input:focus-visible + .hween-code-cells .hween-code-cell[data-active] {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.hween-submit {
+  width: 100%;
+  margin-top: 22px;
+  padding: 15px 24px;
+  font-size: 12px;
+  color: var(--surface);
+  background: var(--text);
+  border: 1px solid var(--text);
+  border-radius: 0;
+  transition: opacity 200ms;
+}
+:root[data-theme='dark'] .hween-submit { color: var(--surface); background: var(--accent); border-color: var(--accent); }
+.hween-submit:hover:not(:disabled) { opacity: .72; }
+.hween-submit:disabled { opacity: .3; cursor: default; }
+
+.hween-footer {
+  width: min(100%, var(--page-width));
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid var(--line);
+  padding: 44px var(--page-gutter) 28px;
+  font-size: 10px;
+  color: var(--muted);
+}
+.hween-footer a { border-bottom: 1px solid var(--line); padding-bottom: 2px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .hween-intro { animation: hween-in 620ms cubic-bezier(.22, 1, .36, 1) backwards; }
+  .hween-intro[data-leaving] { animation: none; }
+  @keyframes hween-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+}
+
+@media (max-width: 1279px) {
+  .hween-title { font-size: 41px; }
+}
+
+@media (max-width: 1023px) {
+  .hween-stage { padding-top: clamp(36px, 6vw, 72px); }
+  .hween-stage { --envelope-w: min(480px, 88vw, 100%); --card-w: min(680px, calc(100vw - 32px)); }
+  .hween-title { font-size: 34px; }
+}
+
+@media (max-width: 767px) {
+  .hween-stage { --envelope-w: min(430px, 90vw, 100%); --card-w: min(600px, calc(100vw - 32px)); }
+  .hween-title { font-size: 40px; }
+  .hween-footer { padding-top: 36px; }
+}
+
+@media (max-width: 479px) {
+  .hween-stage { padding-top: 32px; }
+  .hween-title { font-size: 32px; }
+  .hween-hint { font-size: 12px; margin-top: 14px; }
+  .hween-code-cells { gap: 7px; }
+  .hween-footer { font-size: 9px; padding-bottom: 20px; }
+}
+
+@media (max-width: 374px) {
+  .hween-title { font-size: 29px; }
+  .hween-code-cells { gap: 5px; }
+  .hween-code-cell { font-size: 16px; }
+}
