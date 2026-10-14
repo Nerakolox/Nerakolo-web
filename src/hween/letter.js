@@ -21,10 +21,8 @@ export function isCodeComplete(value) {
 export async function fetchLetter(code) {
   if (!isCodeComplete(code)) return null
 
-  // Local rehearsal entry: the bucket object is the single source of truth once deployed.
-  const source = import.meta.env.DEV
-    ? `/26hween/${code}.json`
-    : `${BUCKET}/26hween/${code}.json`
+  // The bucket object is the single source of truth, in dev and in production alike.
+  const source = `${BUCKET}/26hween/${code}.json`
 
   const response = await fetch(source, { cache: 'no-cache' })
   if (!response.ok) return null
