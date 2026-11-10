@@ -26,7 +26,6 @@
   .footer-contact > a:not(.footer-email) { font-size: 35px; gap: 24px; }
   .footer-contact svg { width: 42px; height: 42px; }
   .footer-bottom { display: grid; grid-template-columns: 1fr auto; gap: 16px 10px; font-size: 9px; }
-  .footer-bottom > a:not(.back-top) { grid-column: 1; }
   .back-top { grid-column: 2; grid-row: 1 / 3; }
 }
 @media (max-width: 374px) {

@@ -15,7 +15,7 @@ h2 { font-size: 38px; font-weight: 350; line-height: 1.65; }
   .reveal { opacity: 1; transform: none; }
   .reveal.is-visible { animation: content-fade .62s cubic-bezier(.22, 1, .36, 1) var(--reveal-delay, 0s) backwards; }
   .about-intro, .platform-github, .destination-tools { --reveal-delay: .06s; }
-  .about-copy, .platform-gitee, .destination-club { --reveal-delay: .14s; }
+  .about-copy, .destination-club { --reveal-delay: .14s; }
   .interests, .desk-mail { --reveal-delay: .2s; }
   .about-intro.is-visible, .about-copy.is-visible, .platform-link.is-visible { animation-name: content-rise; }
   .reveal:focus-within { animation: none; opacity: 1; transform: none; }

@@ -1,6 +1,5 @@
 import { ArrowUp, ArrowUpRight } from 'lucide-react'
 import { email, emailHref } from '../data/site'
-import ExternalLink from './ExternalLink'
 import './Footer.css'
 
 export default function Footer({ onEmailClick }) {
@@ -13,7 +12,6 @@ export default function Footer({ onEmailClick }) {
       </div>
       <div className="footer-bottom">
         <p>© {new Date().getFullYear()} Nerakolo</p>
-        <ExternalLink href="https://beian.miit.gov.cn/">蜀ICP备2024095824号-2</ExternalLink>
         <a className="back-top" href="#home">回到顶部 <ArrowUp size={15} /></a>
       </div>
     </footer>

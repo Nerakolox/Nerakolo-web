@@ -19,7 +19,7 @@ export default function Friends({ onEmailClick }) {
           </div>
           {friendLinks.map(({ id, name, caption, href, description, domain, arrowSize }) => (
             <ExternalLink key={id} className={`destination destination-${id} reveal`} href={href}>
-              <span className="destination-caption">{caption}</span>
+              {caption && <span className="destination-caption">{caption}</span>}
               <h3>{name} <ArrowUpRight size={arrowSize} strokeWidth={1.3} aria-hidden="true" /></h3>
               <span className="destination-domain">{description && <>{description}<span aria-hidden="true"> / </span></>}{domain}</span>
             </ExternalLink>

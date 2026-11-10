@@ -24,23 +24,14 @@ export const socialLinks = [
     address: 'github.com/Nerakolox',
     arrowSize: 28,
   },
-  {
-    id: 'gitee',
-    name: 'Gitee',
-    caption: '另一处代码仓库',
-    href: 'https://gitee.com/Nerakolo',
-    address: 'gitee.com/Nerakolo',
-    arrowSize: 25,
-  },
 ]
 
 export const friendLinks = [
   {
     id: 'tools',
-    name: 'Feedra',
-    caption: '我的独立站',
-    href: 'https://www.feedra.org/',
-    domain: 'www.feedra.org',
+    name: 'Duskbit',
+    href: 'https://www.duskbit.dev/',
+    domain: 'www.duskbit.dev',
     arrowSize: 29,
   },
   {
